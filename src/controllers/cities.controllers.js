@@ -1,20 +1,12 @@
-import { db } from '../database/db.connection.js'
+import httpStatus from 'http-status'
+import { citiesServices } from '../services/cities.service.js'
 
 async function create(req, res) {
   const { name } = req.body
 
-  try {
-    const city = await db.query(`SELECT * FROM cities WHERE name=$1;`, [name])
+  await citiesServices.create(name)
 
-    if (city.rowCount !== 0)
-      return res.status(409).send({ message: 'Cidade já existe!' })
-
-    await db.query(`INSERT INTO cities (name) VALUES ($1)`, [name])
-
-    res.sendStatus(201)
-  } catch (err) {
-    res.status(500).send(err.message)
-  }
+  res.sendStatus(httpStatus.CREATED)
 }
 
 export const citiesController = { create }

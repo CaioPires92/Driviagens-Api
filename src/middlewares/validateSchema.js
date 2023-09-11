@@ -1,13 +1,17 @@
+import { errors } from '../errors/errors.js'
+
 export function validateSchema(schema) {
   return (req, res, next) => {
     const validation = schema.validate(req.body, { abortEarly: false })
 
     if (validation.error) {
-      let errorMessage = ""
-      validation.error.details.forEach(det => errorMessage += det.message + " ")
+      let errorMessage = ''
+      validation.error.details.forEach(
+        det => (errorMessage += det.message + ' ')
+      )
 
       // mudar tratamento de erros
-      return res.status(422).send(errorMessage)
+      throw errors.joi(errorMessage)
     }
 
     next()

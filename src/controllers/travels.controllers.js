@@ -1,6 +1,6 @@
 import { db } from '../database/db.connection.js'
 
-export async function createTravels(req, res) {
+async function create(req, res) {
   const { passengerId, flightId } = req.body
 
   try {
@@ -25,3 +25,6 @@ export async function createTravels(req, res) {
     res.status(500).send(err.message)
   }
 }
+
+
+export const travelsController = {create}

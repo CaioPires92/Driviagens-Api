@@ -1,6 +1,6 @@
 import { db } from '../database/db.connection.js'
 
-export async function createPassengers(req, res) {
+async function create(req, res) {
   const { firstName, lastName } = req.body
 
   try {
@@ -15,7 +15,7 @@ export async function createPassengers(req, res) {
   }
 }
 
-export async function getPessengersTravels(req, res) {
+async function find(req, res) {
   const { name } = req.query
 
   try {
@@ -49,3 +49,5 @@ export async function getPessengersTravels(req, res) {
     res.status(500).json({ message: 'Erro interno do servidor' })
   }
 }
+
+export const passengersControllers = { create, find }
