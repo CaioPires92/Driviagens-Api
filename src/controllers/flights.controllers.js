@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { db } from '../database/db.connection.js'
 
-export async function createFlights(req, res) {
+async function create(req, res) {
   const { origin, destination, date } = req.body || req.params
 
   try {
@@ -26,7 +26,7 @@ export async function createFlights(req, res) {
     }
 
     await db.query(
-      `INSERT INTO flights (origin, destination, data) VALUES ($1, $2, $3);`,
+      `INSERT INTO flights (origin, destination, date) VALUES ($1, $2, $3);`,
       [origin, destination, date]
     )
 
@@ -36,7 +36,7 @@ export async function createFlights(req, res) {
   }
 }
 
-export async function getFlights(req, res) {
+async function find(req, res) {
   try {
     const { origin, destination, smallerDate, biggerDate } = req.query
 
@@ -53,16 +53,20 @@ export async function getFlights(req, res) {
 
     const params = []
 
-    if (origin) {
+    if (origin && destination) {
+      // Quando ambos origin e destination estão presentes
+      query += ' AND cities_origin.name = $1 AND cities_destination.name = $2'
+      params.push(origin, destination)
+    } else if (origin) {
+      // Quando apenas origin está presente
       query += ' AND cities_origin.name = $1'
       params.push(origin)
-    }
-
-    if (destination) {
-      query += ' AND cities_destination.name = $2'
+    } else if (destination) {
+      // Quando apenas destination está presente
+      query += ' AND cities_destination.name = $1'
       params.push(destination)
     }
-
+    
     if (smallerDate && biggerDate) {
       query += ' AND flights.date BETWEEN $3 AND $4'
       params.push(smallerDate, biggerDate)
@@ -87,3 +91,5 @@ export async function getFlights(req, res) {
     res.status(500).json({ message: 'Erro interno do servidor' })
   }
 }
+
+export const flightsControllers = { create, find }

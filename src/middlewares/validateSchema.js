@@ -3,9 +3,13 @@ export function validateSchema(schema) {
     const validation = schema.validate(req.body, { abortEarly: false })
 
     if (validation.error) {
-      const errors = validation.error.details.map(detail => detail.message)
-      return res.status(422).send(errors)
+      let errorMessage = ""
+      validation.error.details.forEach(det => errorMessage += det.message + " ")
+
+      // mudar tratamento de erros
+      return res.status(422).send(errorMessage)
     }
+
     next()
   }
 }

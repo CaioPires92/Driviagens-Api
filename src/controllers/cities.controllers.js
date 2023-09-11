@@ -1,6 +1,6 @@
 import { db } from '../database/db.connection.js'
 
-export async function createCities(req, res) {
+async function create(req, res) {
   const { name } = req.body
 
   try {
@@ -16,3 +16,5 @@ export async function createCities(req, res) {
     res.status(500).send(err.message)
   }
 }
+
+export const citiesController = { create }
