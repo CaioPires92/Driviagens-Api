@@ -1,30 +1,11 @@
-import { db } from '../database/db.connection.js'
+import httpStatus from 'http-status'
+import { travelService } from '../services/travels.service.js'
 
 async function create(req, res) {
   const { passengerId, flightId } = req.body
 
-  try {
-    const passenger = await db.query(`SELECT * FROM passengers WHERE id=$1`, [
-      passengerId
-    ])
-    const flight = await db.query(`SELECT * FROM flights WHERE id=$1`, [
-      flightId
-    ])
-
-    if (passenger.rowCount === 0 || flight.rowCount === 0) {
-      return res.status(404).send('passejeiro ou voo não encontrado!')
-    }
-
-    await db.query(
-      `INSERT INTO travels (passengerId, flightId) VALUES ($1, $2)`,
-      [passengerId, flightId]
-    )
-
-    return res.sendStatus(201)
-  } catch (err) {
-    res.status(500).send(err.message)
-  }
+  await travelService.create(passengerId, flightId)
+  return res.sendStatus(httpStatus.CREATED)
 }
 
-
-export const travelsController = {create}
+export const travelsController = { create }
